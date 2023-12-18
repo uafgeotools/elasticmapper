@@ -1,0 +1,8 @@
+name: seismo
+channels:
+  - conda-forge
+  - default
+dependencies:
+  - matplotlib  
+  - notebook
+  - scipy
