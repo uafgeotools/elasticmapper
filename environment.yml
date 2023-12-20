@@ -3,6 +3,6 @@ channels:
   - conda-forge
   - default
 dependencies:
-  - matplotlib  
+  - cartopy  
   - notebook
   - scipy
