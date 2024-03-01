@@ -7,6 +7,65 @@ def reorder(input_vec, output_index):
         output_vec[j - 1] = input_vec[i]
     return output_vec
 
+def read_material(filename):
+    def read_table(filename):
+        table = []
+        with open(filename, 'r') as file:
+            for line in file:
+                row = [item for item in line.split()]
+                table.append(row)
+        return table
+
+    def reorganize(table):
+        if "Vestrum" in filename:
+            cvec = np.array(   table[0][0:6]
+                             + table[1][1:6]
+                             + table[2][2:6]
+                             + table[3][3:6]
+                             + table[4][4:6]
+                             + table[5][5:6])
+
+            stdv = np.array(   table[0][6: ]
+                             + table[1][7: ]
+                             + table[2][8: ]
+                             + table[3][9: ]
+                             + table[4][10:]
+                             + table[5][11:])
+
+            cvec = [float(item) for item in cvec]
+            stdv = [float(item) for item in stdv]
+            materials = np.array(list(zip(cvec, stdv)))
+            order = [i for i in range(1,22)]
+
+        elif any(item in filename for item in ["Aminzadeh", "Brown", "Lokajicek",
+                                                    "Militzer"]):
+            if "Brown" in filename:
+                materials = []
+                for i in range(21):
+                    row = []
+                    for j in range(1,16,2):
+                        row.append([float(table[i][j]), float(table[i][j+1])])
+                    materials.append(row)
+            else:
+                materials = []
+                for row in table:
+                    materials.append([float(item) for item in row[1:]])
+
+            materials = np.array(materials)
+            cij = [row[0] for row in table]
+            order = [np.argmax(np.argsort(cij) == i)+1 for i in range(21)]
+
+        else:
+            sys.exit("Reading logic for the given file is not defined")
+
+        return materials, order
+
+    def main(filename):
+        table = read_table(filename)
+        return reorganize(table)
+
+    return main(filename)
+
 def get_materials_Tvec(material):
 
     '''
@@ -327,30 +386,8 @@ def get_materials_Cvec(material):
 
     if material == "Brown":
 
-        An = np.array([
-        [[ 68.3, 0.8],[ 87.1, 1.3],[ 96.2, 1.6],[104.6, 1.9],[109.3, 1.7],[120.3, 4.2],[120.4, 2.6],[132.2, 3.0]],
-        [[184.3, 4.9],[174.9, 5.2],[189.4, 4.9],[201.4, 6.6],[185.5, 2.3],[193.5, 4.4],[191.6, 6.3],[200.2, 5.4]],
-        [[180.0, 3.0],[166.1, 4.7],[171.9, 4.5],[172.8, 5.1],[164.1, 1.9],[171.9, 5.0],[163.7, 5.0],[163.9, 4.1]],
-        [[ 25.0, 0.1],[ 22.9, 0.2],[ 23.6, 0.1],[ 22.9, 0.1],[ 22.2, 0.1],[ 24.0, 0.1],[ 23.3, 0.1],[ 24.6, 0.1]],
-        [[ 26.9, 0.1],[ 29.0, 0.2],[ 33.1, 0.3],[ 33.0, 0.3],[ 33.1, 0.2],[ 35.5, 0.3],[ 32.8, 0.3],[ 36.6, 0.2]],
-        [[ 33.6, 0.2],[ 35.0, 0.3],[ 35.5, 0.3],[ 35.6, 0.2],[ 36.8, 0.3],[ 37.3, 0.4],[ 35.0, 0.5],[ 36.0, 0.3]],
-        [[ 32.2, 1.6],[ 43.9, 2.0],[ 46.1, 2.5],[ 51.5, 2.8],[ 53.1, 1.1],[ 54.4, 3.7],[ 56.6, 3.4],[ 64.0, 3.5]],
-        [[ 30.4, 1.5],[ 35.4, 1.9],[ 38.4, 2.2],[ 43.9, 2.4],[ 42.1, 2.1],[ 40.8, 3.2],[ 49.9, 2.9],[ 55.3, 2.8]],
-        [[  5.0, 2.6],[ 18.0, 3.7],[ 15.4, 4.0],[ 14.5, 4.5],[ 21.9, 2.8],[ 16.1, 4.7],[ 26.3, 4.5],[ 31.9, 3.7]],
-        [[ -2.3, 0.3],[ -0.4, 0.4],[ -0.2, 0.4],[  0.1, 0.5],[  1.2, 0.4],[  2.3, 1.0],[  3.2, 0.6],[  5.1, 0.6]],
-        [[ -7.8, 0.7],[ -2.9, 0.8],[ -5.1, 1.1],[ -4.8, 1.2],[  0.7, 0.8],[  3.1, 1.6],[  5.4, 1.0],[  3.5, 0.9]],
-        [[  7.5, 0.6],[  4.6, 0.8],[  7.2, 1.1],[  6.9, 1.0],[  2.5, 0.8],[  2.2, 1.5],[  1.7, 0.9],[  0.5, 0.9]],
-        [[ -7.2, 0.1],[ -5.2, 0.2],[ -4.8, 0.2],[ -3.8, 0.2],[  1.4, 0.1],[  0.3, 0.2],[  0.9, 0.2],[ -2.2, 0.1]],
-        [[  4.9, 0.2],[  6.1, 0.3],[  5.9, 0.3],[  6.5, 0.4],[  7.6, 0.3],[  9.2, 0.6],[  9.0, 0.5],[  9.5, 0.5]],
-        [[ -0.9, 0.3],[ -0.6, 0.4],[ -0.4, 0.5],[ -0.8, 0.5],[ -7.7, 0.5],[-10.1, 1.4],[ -3.0, 0.6],[-10.8, 0.7]],
-        [[ -4.4, 0.6],[ -5.9, 0.6],[ -7.0, 0.6],[ -2.4, 0.6],[ -2.9, 0.5],[  0.9, 1.0],[  2.1, 0.9],[  7.5, 0.6]],
-        [[ -6.4, 0.9],[ -6.5, 0.9],[ -6.8, 1.2],[ -9.9, 1.2],[ -6.8, 1.1],[ -2.9, 2.1],[ -9.9, 1.3],[ -7.2, 1.3]],
-        [[ -9.2, 0.4],[ -2.9, 0.5],[  2.2, 0.7],[ -0.4, 0.5],[  0.2, 0.5],[ -0.9, 1.0],[  1.7, 0.9],[  6.6, 0.6]],
-        [[ -9.4, 0.6],[-10.7, 0.9],[ -9.8, 0.9],[ -5.7, 1.0],[  0.7, 0.8],[ -0.3, 1.2],[ -8.1, 1.1],[  1.6, 1.0]],
-        [[ -2.4, 0.1],[ -1.3, 0.1],[ -1.1, 0.2],[ -1.0, 0.2],[  0.2, 0.1],[  0.7, 0.2],[  0.8, 0.1],[  3.0, 0.1]],
-        [[  0.6, 0.1],[  0.8, 0.2],[  1.4, 0.2],[  2.1, 0.3],[  2.8, 0.2],[  3.2, 0.3],[  4.5, 0.3],[  5.2, 0.2]]])
-
-        output_index = [1, 7, 12, 16, 19, 21, 2, 3, 8, 5, 10, 14, 18, 4, 6, 9, 11, 13, 15, 17, 20]
+        filename = 'data/Brown2016_Table2.txt'
+        An, output_index = read_material(filename)
 
         An0  = reorder(An[:, 0, 0], output_index)
         An25 = reorder(An[:, 1, 0], output_index)
@@ -370,176 +407,84 @@ def get_materials_Cvec(material):
         An78_stdv = 1/2 * reorder(An[:, 6, 1], output_index)
         An96_stdv = 1/2 * reorder(An[:, 7, 1], output_index)
 
-        return (An0 , An0_stdv , An25, An25_stdv, An37, An37_stdv, An48, An48_stdv, An60, An60_stdv, An67, An67_stdv,
-                An78, An78_stdv, An96, An96_stdv)
+        return (An0 , An0_stdv , An25, An25_stdv, An37, An37_stdv, An48,
+                An48_stdv, An60, An60_stdv, An67, An67_stdv, An78, An78_stdv,
+                An96, An96_stdv)
 
     elif material == "Igel":
 
-        Cvec = np.array([10.0,  3.50, 2.50, -5.000,  0.10,  0.300,
+        cvec = np.array([10.0,  3.50, 2.50, -5.000,  0.10,  0.300,
                                 8.00, 1.50,  0.200, -0.10, -0.150,
                                       6.00,  1.000,  0.40,  0.240,
                                              5.000,  0.35,  0.525,
                                                      4.00, -1.000,
                                                             3.000])
 
-        return Cvec
+        return cvec
 
     elif material == "Aminzadeh":
 
-        BUK = np.array([
-        [89.80, 91.46, 92.78, 94.97, 99.38, 106.17, 108.45, 109.35],
-        [78.88, 80.51, 81.40, 83.89, 89.13,  97.02,  99.18,  99.36],
-        [45.05, 49.61, 54.65, 62.60, 72.92,  82.26,  84.24,  85.07],
-        [19.68, 20.34, 21.08, 22.39, 24.02,  26.14,  26.63,  27.12],
-        [21.79, 22.66, 23.03, 24.18, 26.07,  27.69,  28.43,  28.44],
-        [28.55, 29.00, 29.41, 30.78, 32.52,  34.49,  35.02,  35.45],
-        [27.02, 27.74, 27.91, 27.30, 28.57,  32.04,  32.99,  33.25],
-        [14.85, 17.35, 19.05, 22.93, 27.53,  33.54,  33.91,  34.13],
-        [16.66, 18.97, 20.57, 24.35, 29.92,  34.97,  36.04,  36.00],
-        [ 0.41,  0.16, -0.11,  0.57,  0.24,   0.35,   0.10,  -0.09],
-        [-0.51, -0.65, -0.66,  0.32,  0.30,   0.18,  -0.41,   0.42],
-        [-1.06, -0.64, -0.69, -0.59, -0.33,  -0.49,   0.44,  -0.43],
-        [ 0.05,  0.05,  0.09,  0.33,  0.46,   0.31,   0.36,   0.47],
-        [ 3.78,  3.09,  2.87, -2.34, -3.07,  -3.33,   3.71,  -3.76],
-        [-0.02, -0.16, -0.40, -0.38, -0.36,  -0.24,   0.31,  -0.38],
-        [-0.91, -0.68, -0.70, -0.41, -0.20,  -0.12,  -0.06,  -0.01],
-        [-0.55, -0.36, -0.19,  0.11,  0.51,   0.36,  -0.39,   0.33],
-        [ 3.08,  2.26,  2.80,  2.53,  2.02,   2.26,  -2.03,   2.36],
-        [-0.93, -0.66, -0.63, -0.58, -0.64,  -0.80,   0.52,  -0.75],
-        [-1.66, -1.06, -1.16,  1.48,  1.46,   2.25,  -2.10,   2.25],
-        [ 1.32,  1.11,  1.34, -0.42, -0.76,  -0.74,  -0.70,  -0.84]])
+        filename_1 = 'data/Aminzadeh2022_Table3.txt'
+        BUK, output_index_1 = read_material(filename_1)
 
-        GRM = np.array([
-        [48.16, 54.38, 66.76, 74.09, 79.97, 104.40, 112.58, 114.68],
-        [44.60, 51.84, 64.94, 71.30, 76.48, 101.01, 108.76, 112.45],
-        [23.07, 34.51, 48.43, 57.00, 63.29,  96.23, 105.92, 110.49],
-        [10.63, 11.90, 14.43, 17.41, 19.05,  27.36,  32.17,  35.48],
-        [ 7.67, 11.59, 16.86, 19.93, 22.97,  32.02,  36.08,  36.97],
-        [13.85, 16.83, 18.96, 22.11, 24.97,  31.68,  37.35,  38.12],
-        [19.34, 20.17, 25.81, 26.57, 27.12,  35.85,  34.90,  35.20],
-        [13.23, 16.93, 20.41, 22.36, 23.44,  34.53,  37.02,  35.89],
-        [10.81, 17.68, 23.70, 25.37, 25.54,  39.77,  38.09,  32.87],
-        [-1.18,  0.27, -0.57,  0.26, -0.96,  -0.76,  -0.07,  -0.53],
-        [ 0.06, -0.23,  0.58,  0.34,  0.16,  -0.09,   0.19,   0.32],
-        [-0.30,  0.24, -0.05,  0.41, -0.73,  -0.12,  -1.12,   0.76],
-        [ 0.53, -0.30, -0.64,  0.40,  0.11,   0.30,  -0.92,   0.12],
-        [-1.70,  1.98, -0.03, -0.65, -0.95,  -1.09,  -1.03,   1.06],
-        [ 0.43, -0.21, -0.47,  0.43, -0.06,  -0.50,   0.48,   0.37],
-        [-0.29,  0.35,  0.73, -0.16,  0.29,  -0.45,   0.65,   0.42],
-        [ 0.36, -0.14, -0.28,  0.12,  0.28,   0.52,   0.38,  -0.31],
-        [-0.98, -1.87, -0.57, -0.03,  0.59,   0.05,   0.97,  -3.03],
-        [ 0.73,  1.80,  1.62, -1.65,  1.00,   1.19,   0.31,   0.77],
-        [ 0.85, -1.25, -0.56, -0.28,  0.07,   0.24,  -0.11,  -1.08],
-        [ 0.70, -0.38,  0.40, -0.75,  0.16,   1.07,   0.60,  -0.56]])
+        BUK_01  = reorder(BUK[:,0], output_index_1)
+        BUK_2   = reorder(BUK[:,1], output_index_1)
+        BUK_5   = reorder(BUK[:,2], output_index_1)
+        BUK_10  = reorder(BUK[:,3], output_index_1)
+        BUK_20  = reorder(BUK[:,4], output_index_1)
+        BUK_50  = reorder(BUK[:,5], output_index_1)
+        BUK_80  = reorder(BUK[:,6], output_index_1)
+        BUK_100 = reorder(BUK[:,7], output_index_1)
 
-        output_index = [1, 7, 12, 16, 19, 21, 2, 3, 8, 4, 5, 6, 9, 10, 11, 13, 14, 15, 17, 18, 20]
+        filename_2 = 'data/Aminzadeh2022_Table4.txt'
+        GRM, output_index_2 = read_material(filename_2)
 
-        BUK_01  = reorder(BUK[:,0], output_index)
-        BUK_2   = reorder(BUK[:,1], output_index)
-        BUK_5   = reorder(BUK[:,2], output_index)
-        BUK_10  = reorder(BUK[:,3], output_index)
-        BUK_20  = reorder(BUK[:,4], output_index)
-        BUK_50  = reorder(BUK[:,5], output_index)
-        BUK_80  = reorder(BUK[:,6], output_index)
-        BUK_100 = reorder(BUK[:,7], output_index)
+        GRM_01  = reorder(GRM[:, 0], output_index_2)
+        GRM_5   = reorder(GRM[:, 1], output_index_2)
+        GRM_10  = reorder(GRM[:, 2], output_index_2)
+        GRM_15  = reorder(GRM[:, 3], output_index_2)
+        GRM_20  = reorder(GRM[:, 4], output_index_2)
+        GRM_50  = reorder(GRM[:, 5], output_index_2)
+        GRM_80  = reorder(GRM[:, 6], output_index_2)
+        GRM_100 = reorder(GRM[:, 7], output_index_2)
 
-        GRM_01  = reorder(GRM[:, 0], output_index)
-        GRM_5   = reorder(GRM[:, 1], output_index)
-        GRM_10  = reorder(GRM[:, 2], output_index)
-        GRM_15  = reorder(GRM[:, 3], output_index)
-        GRM_20  = reorder(GRM[:, 4], output_index)
-        GRM_50  = reorder(GRM[:, 5], output_index)
-        GRM_80  = reorder(GRM[:, 6], output_index)
-        GRM_100 = reorder(GRM[:, 7], output_index)
-
-        return BUK_01, BUK_2, BUK_5, BUK_10, BUK_20, BUK_50, BUK_80, BUK_100, GRM_01, GRM_5, GRM_10, GRM_15, GRM_20, \
-            GRM_50, GRM_80, GRM_100
+        return (BUK_01, BUK_2, BUK_5, BUK_10, BUK_20, BUK_50, BUK_80, BUK_100,
+                GRM_01, GRM_5, GRM_10, GRM_15, GRM_20, GRM_50, GRM_80, GRM_100)
 
     elif material == "Lokajicek":
 
-        WG2D = np.array([
-        [57.6, 49.5, 33.0,  8.7],
-        [59.8, 51.2, 34.1,  8.6],
-        [60.8, 52.2, 35.3,  8.9],
-        [19.9, 17.0, 11.5,  3.0],
-        [19.9, 17.1, 11.6,  3.0],
-        [19.8, 17.0, 11.5,  3.0],
-        [19.5, 16.8, 11.0,  3.1],
-        [19.5, 16.7, 11.5,  3.0],
-        [ 0.3,  0.3,  0.4,  0.0],
-        [ 1.4,  1.4,  0.8,  0.3],
-        [ 1.9,  1.8,  1.3,  0.7],
-        [19.8, 16.8, 11.8,  3.1],
-        [ 0.4,  0.2, -0.4,  0.0],
-        [ 0.6,  0.6,  0.3,  0.1],
-        [ 1.5,  1.6,  1.4,  0.5],
-        [ 0.4,  0.1, -0.2, -0.2],
-        [ 2.0,  1.7,  1.2,  0.4],
-        [ 1.2,  0.9,  1.0,  0.5],
-        [ 0.2,  0.1,  0.2,  0.1],
-        [ 0.1,  0.1,  0.1,  0.0],
-        [ 0.1,  0.1,  0.1,  0.0]])
+        filename = 'data/Lokajicek2021_supp_5MPa.txt'
+        materials, output_index_1 = read_material(filename)
 
-        WG100 = np.array([
-        [47.6, 101.4],
-        [16.7,  34.8],
-        [16.3,  34.4],
-        [ 0.1,   0.2],
-        [-1.1,   0.6],
-        [-2.0,   0.7],
-        [51.1, 100.8],
-        [16.8,  33.4],
-        [ 0.0,   0.9],
-        [-0.6,   0.9],
-        [-2.1,   1.0],
-        [51.7, 104.4],
-        [ 0.2,   0.9],
-        [-1.8,   0.4],
-        [-1.2,   0.4],
-        [16.8,  34.1],
-        [-0.2,   0.1],
-        [-0.2,   0.2],
-        [16.8,  34.3],
-        [ 0.1,   0.0],
-        [16.8,  34.4]])
+        WG2D = materials[:, [3,6,8,9]]
 
-        WG600 = np.array([
-        [ 3.5,  99.5],
-        [ 1.3,  32.8],
-        [ 1.3,  33.0],
-        [ 0.0,   0.7],
-        [-0.2,  -0.2],
-        [-0.5,   0.8],
-        [ 3.4,  99.3],
-        [ 1.2,  33.2],
-        [-0.1,   1.0],
-        [-0.1,   0.5],
-        [-0.4,   1.0],
-        [ 3.4, 102.3],
-        [-0.1,   0.6],
-        [-0.2,   0.0],
-        [-0.2,   0.7],
-        [ 1.2,  33.5],
-        [ 0.0,   0.1],
-        [ 0.0,   0.1],
-        [ 1.2,  33.5],
-        [ 0.0,   0.1],
-        [ 1.3,  33.4]])
+        WG2D_100 = reorder(WG2D[:, 0], output_index_1)
+        WG2D_200 = reorder(WG2D[:, 1], output_index_1)
+        WG2D_400 = reorder(WG2D[:, 2], output_index_1)
+        WG2D_600 = reorder(WG2D[:, 3], output_index_1)
 
-        output_index = [1, 7, 12, 16, 19, 21, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14, 15, 17, 18, 20]
+        filename = 'data/Lokajicek2021_Table3.txt'
+        materials, output_index_2 = read_material(filename)
 
-        WG2D_100 = reorder(WG2D[:, 0], output_index)
-        WG2D_200 = reorder(WG2D[:, 1], output_index)
-        WG2D_400 = reorder(WG2D[:, 2], output_index)
-        WG2D_600 = reorder(WG2D[:, 3], output_index)
+        WG100 = materials[:, [4, 5]]
+        WG600 = materials[:, [6, 7]]
 
-        # Note that these maps don't need reordering
-        WG100_01  = WG100[:, 0]
-        WG100_400 = WG100[:, 1]
-        WG600_01  = WG600[:, 0]
-        WG600_400 = WG600[:, 1]
+        WG100_01  = reorder(WG100[:, 0], output_index_2)
+        WG100_400 = reorder(WG100[:, 1], output_index_2)
+        WG600_01  = reorder(WG600[:, 0], output_index_2)
+        WG600_400 = reorder(WG600[:, 1], output_index_2)
 
-        return WG2D_100, WG2D_200, WG2D_400, WG2D_600, WG100_01, WG100_400, WG600_01, WG600_400
+        return (WG2D_100, WG2D_200, WG2D_400, WG2D_600, WG100_01, WG100_400,
+                WG600_01, WG600_400)
+
+    elif material == "Vestrum":
+
+        filename = "data/Vestrum1996_Table2.txt"
+        material, output_index = read_material(filename)
+        cvec = reorder(material[:, 0], output_index)
+        stdv = reorder(material[:, 1], output_index)
+
+        return cvec, stdv
 
     else:
 
