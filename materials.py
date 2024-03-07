@@ -2,7 +2,7 @@ import numpy as np
 import sys
 
 def reorder(input_vec, output_index):
-    output_vec = np.empty(21)
+    output_vec = np.zeros(21)
     for i, j in enumerate(output_index):
         output_vec[j - 1] = input_vec[i]
     return output_vec
@@ -39,7 +39,14 @@ def read_material(filename):
 
         elif any(item in filename for item in ["Aminzadeh", "Brown", "Lokajicek",
                                                     "Militzer"]):
-            if "Brown" in filename:
+            if "BrownAbramson" in filename:
+                materials = []
+                for i in range(len(table)):
+                    row = []
+                    for j in range(1,len(table[0])-1,2):
+                        row.append([float(table[i][j]), float(table[i][j+1])])
+                    materials.append(row)
+            elif "Brown" in filename:
                 materials = []
                 for i in range(21):
                     row = []
@@ -51,8 +58,17 @@ def read_material(filename):
                 for row in table:
                     materials.append([float(item) for item in row[1:]])
 
-            materials = np.array(materials)
+            cmn = ["C11", "C12", "C13", "C14", "C15", "C16",
+                          "C22", "C23", "C24", "C25", "C26",
+                                 "C33", "C34", "C35", "C36",
+                                        "C44", "C45", "C46",
+                                               "C55", "C56",
+                                                      "C66"]
+
             cij = [row[0] for row in table]
+            cij = cij + [item for item in cmn if item not in cij]
+
+            materials = np.array(materials)
             order = [np.argmax(np.argsort(cij) == i)+1 for i in range(21)]
 
         else:
@@ -384,9 +400,40 @@ def get_materials_Cvec(material):
     2 - Igel1995 matrices
     '''
 
-    if material == "Brown":
+    if material == "BrownAbramson":
 
-        filename = 'data/Brown2016_Table2.txt'
+        filename = '../data/BrownAbramson2016_Table3.txt'
+        materials, order = read_material(filename)
+
+        output_index = order[:len(materials)]
+
+        cvec_1 = reorder(materials[:, 0, 0], output_index)
+        cvec_2 = reorder(materials[:, 1, 0], output_index)
+        cvec_3 = reorder(materials[:, 2, 0], output_index)
+        cvec_4 = reorder(materials[:, 3, 0], output_index)
+        cvec_5 = reorder(materials[:, 4, 0], output_index)
+        cvec_6 = reorder(materials[:, 5, 0], output_index)
+        cvec_7 = reorder(materials[:, 6, 0], output_index)
+        cvec_8 = reorder(materials[:, 7, 0], output_index)
+        cvec_9 = reorder(materials[:, 8, 0], output_index)
+
+        stdv_1 = 1/2 * reorder(materials[:, 0, 1], output_index)
+        stdv_2 = 1/2 * reorder(materials[:, 1, 1], output_index)
+        stdv_3 = 1/2 * reorder(materials[:, 2, 1], output_index)
+        stdv_4 = 1/2 * reorder(materials[:, 3, 1], output_index)
+        stdv_5 = 1/2 * reorder(materials[:, 4, 1], output_index)
+        stdv_6 = 1/2 * reorder(materials[:, 5, 1], output_index)
+        stdv_7 = 1/2 * reorder(materials[:, 6, 1], output_index)
+        stdv_8 = 1/2 * reorder(materials[:, 7, 1], output_index)
+        stdv_9 = 1/2 * reorder(materials[:, 8, 1], output_index)
+
+        return (cvec_1, stdv_1, cvec_2, stdv_2, cvec_3, stdv_3, cvec_4, stdv_4,
+                cvec_5, stdv_5, cvec_6, stdv_6, cvec_7, stdv_7, cvec_8, stdv_8,
+                cvec_9, stdv_9)
+
+    elif material == "Brown":
+
+        filename = '../data/Brown2016_Table2.txt'
         An, output_index = read_material(filename)
 
         An0  = reorder(An[:, 0, 0], output_index)
@@ -424,7 +471,7 @@ def get_materials_Cvec(material):
 
     elif material == "Aminzadeh":
 
-        filename_1 = 'data/Aminzadeh2022_Table3.txt'
+        filename_1 = '../data/Aminzadeh2022_Table3.txt'
         BUK, output_index_1 = read_material(filename_1)
 
         BUK_01  = reorder(BUK[:,0], output_index_1)
@@ -436,7 +483,7 @@ def get_materials_Cvec(material):
         BUK_80  = reorder(BUK[:,6], output_index_1)
         BUK_100 = reorder(BUK[:,7], output_index_1)
 
-        filename_2 = 'data/Aminzadeh2022_Table4.txt'
+        filename_2 = '../data/Aminzadeh2022_Table4.txt'
         GRM, output_index_2 = read_material(filename_2)
 
         GRM_01  = reorder(GRM[:, 0], output_index_2)
@@ -453,7 +500,7 @@ def get_materials_Cvec(material):
 
     elif material == "Lokajicek":
 
-        filename = 'data/Lokajicek2021_supp_5MPa.txt'
+        filename = '../data/Lokajicek2021_supp_5MPa.txt'
         materials, output_index_1 = read_material(filename)
 
         WG2D = materials[:, [3,6,8,9]]
@@ -463,7 +510,7 @@ def get_materials_Cvec(material):
         WG2D_400 = reorder(WG2D[:, 2], output_index_1)
         WG2D_600 = reorder(WG2D[:, 3], output_index_1)
 
-        filename = 'data/Lokajicek2021_Table3.txt'
+        filename = '../data/Lokajicek2021_Table3.txt'
         materials, output_index_2 = read_material(filename)
 
         WG100 = materials[:, [4, 5]]
@@ -479,7 +526,7 @@ def get_materials_Cvec(material):
 
     elif material == "Vestrum":
 
-        filename = "data/Vestrum1996_Table2.txt"
+        filename = "../data/Vestrum1996_Table2.txt"
         material, output_index = read_material(filename)
         cvec = reorder(material[:, 0], output_index)
         stdv = reorder(material[:, 1], output_index)
