@@ -17,6 +17,9 @@ from utilities import v2sm
 def distance(c_vec, sigma, tracker=None, method="differential_evolution", popsize=15, number_of_runs=10, sample_size=250,
              number_of_minima=10, use_parallel_processing=True):
 
+    # wraps around GetTempAndT0S0P0
+    # function designed to call GetTempAndT0S0P0 within a user defined parallelizatin routine
+
     # To keep track of how much of the parallelized job is completed
     if tracker:
         print(f'{tracker} \n')
@@ -31,6 +34,7 @@ def distance(c_vec, sigma, tracker=None, method="differential_evolution", popsiz
     return [betaT(t_mat, temp[0]), temp[1]['theta'], temp[1]['sigma'], temp[1]['phi']]
 
 def closest(Tmat, Sigma):
+    # returns closest Tmat (6x6 matrix)
     temp = GetTempAndT0S0P0(Tmat, Sigma)
     return proj_to_vsig_of_u_new(Tmat, UsHat([temp[1]['theta'], temp[1]['sigma'], temp[1]['phi']]), Sigma)
 
