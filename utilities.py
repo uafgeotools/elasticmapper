@@ -83,3 +83,11 @@ def sm2v(input_mat):
     output_vec[20:21] = input_mat[5,5:6]
 
     return output_vec
+
+def read_table(filename):
+    table = []
+    with open(filename, 'r') as file:
+        for line in file:
+            row = [item for item in line.split()]
+            table.append(row)
+    return table
