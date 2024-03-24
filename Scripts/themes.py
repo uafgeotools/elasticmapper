@@ -2,6 +2,8 @@ import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
 
+from utilities import read_table
+
 colors = {'ISO' :'red',
           'CUBE':'orange',
           'XISO':'teal',
@@ -26,7 +28,7 @@ def global_plot(lons, lats, values, title, write=False, figname=None,
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.Robinson(
         central_longitude=central_longitude))
     ax.set_global()
-    ax.coastlines()
+    ax.coastlines(color='grey')
 
     cmap = plt.get_cmap(cmap)
 
@@ -49,10 +51,32 @@ def global_plot(lons, lats, values, title, write=False, figname=None,
     clb.ax.tick_params(labelsize=10)
     ax.set_title(title, fontsize=20)
 
+    plot_plate_boundaries(ax)
+
     if write:
         if figname:
             plt.savefig(f'{figname}.png', bbox_inches='tight')
     plt.show()
+
+def plot_plate_boundaries(ax):
+    table = read_table('Data/bird_boundaries')
+
+    lons_boundaries = []
+    lats_boundaries = []
+
+    for point in table:
+        try:
+            lons_boundaries.append(float(point[0]))
+            lats_boundaries.append(float(point[1]))
+        except:
+            try:
+                ax.scatter(lons_boundaries, lats_boundaries, c='k', s=0.1,
+                           transform=ccrs.PlateCarree())
+                lons_boundaries = []
+                lats_boundaries = []
+                continue
+            except:
+                continue
 
 def correlation_plot(x, y, xlabel, ylabel, write=False, figname=None):
     number_of_bins = 20
