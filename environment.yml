@@ -1,8 +1,8 @@
-name: seismo
+name: emap
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - cartopy  
+  - cartopy
+  - geopandas
   - notebook
-  - scipy
