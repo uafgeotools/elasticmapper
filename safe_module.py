@@ -15,23 +15,27 @@ from find_symmetry_groups import UsHat
 from utilities import v2sm
 
 def distance(c_vec, sigma, tracker=None, method="differential_evolution", popsize=15, number_of_runs=10, sample_size=250,
-             number_of_minima=10, use_parallel_processing=True):
-
-    # wraps around GetTempAndT0S0P0
-    # function designed to call GetTempAndT0S0P0 within a user defined parallelizatin routine
-
-    # To keep track of how much of the parallelized job is completed
-    if tracker:
-        print(f'{tracker} \n')
+             number_of_minima=10, use_parallel_processing=True, U=None):
 
     c_mat = v2sm(c_vec)
     t_mat = tmat_of_cmat(c_mat)
 
-    temp = GetTempAndT0S0P0(t_mat, sigma, method=method, popsize=popsize, number_of_runs=number_of_runs,
-                            sample_size=sample_size, number_of_minima=number_of_minima,
-                            use_parallel_processing=use_parallel_processing)
+    # wraps around GetTempAndT0S0P0
+    # function designed to call GetTempAndT0S0P0 within a user defined parallelizatin routine
 
-    return [betaT(t_mat, temp[0]), temp[1]['theta'], temp[1]['sigma'], temp[1]['phi']]
+    if U:
+        return betaT(t_mat, DistToVSigmaofU(t_mat, U, sigma))
+
+    else:
+        # To keep track of how much of the parallelized job is completed
+        if tracker:
+            print(f'{tracker} \n')
+
+        temp = GetTempAndT0S0P0(t_mat, sigma, method=method, popsize=popsize, number_of_runs=number_of_runs,
+                                sample_size=sample_size, number_of_minima=number_of_minima,
+                                use_parallel_processing=use_parallel_processing)
+
+        return [betaT(t_mat, temp[0]), temp[1]['theta'], temp[1]['sigma'], temp[1]['phi']]
 
 def closest(Tmat, Sigma):
     # returns closest Tmat (6x6 matrix)
