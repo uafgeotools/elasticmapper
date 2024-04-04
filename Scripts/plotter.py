@@ -30,7 +30,7 @@ class Plotter:
                              fig=fig, figloc=gs[0,1], fig_label='c)')
             self.correlation_plot(x, y, xlabel, ylabel,
                                   fig=fig, figloc=gs[1,1], fig_label='d)',
-                                  trend=trend, aspect=aspect)
+                                  residual=residual, trend=trend, aspect=aspect)
         else:
             fig = plt.figure(figsize=(14, 10))
             gs = gridspec.GridSpec(2, 3, width_ratios=[1, 0.05, 0.5])
@@ -42,6 +42,37 @@ class Plotter:
                          fig=fig, figloc=gs[0,0], fig_label='a)')
         self.global_plot(x, xlabel, cmaps=cmaps1,
                          fig=fig, figloc=gs[1,0], fig_label='b)')
+
+        plt.tight_layout()
+        if self.write: plt.savefig(f"{filename}.png", bbox_inches='tight')
+        plt.show()
+
+    def multi_correlation_plots(self, x, y, z, xlabel, ylabel, zlabel,
+                                cmaps1=('jet', False, None, None),
+                                cmaps2=None, cmaps3=None,
+                                trend=False, aspect=None, filename=None):
+
+        if cmaps2 is None: cmaps2 = cmaps1
+        if cmaps3 is None: cmaps3 = cmaps1
+
+        fig = plt.figure(figsize=(14, 15))
+        gs = gridspec.GridSpec(3, 3, width_ratios=[1, 0.05, 0.5])
+
+        self.global_plot(z, zlabel, cmaps=cmaps3,
+                         fig=fig, figloc=gs[0, 0], fig_label='a)')
+        self.global_plot(y, ylabel, cmaps=cmaps2,
+                         fig=fig, figloc=gs[1, 0], fig_label='b)')
+        self.global_plot(x, xlabel, cmaps=cmaps1,
+                         fig=fig, figloc=gs[2, 0], fig_label='c)')
+        self.correlation_plot(z, x, zlabel, xlabel,
+                              fig=fig, figloc=gs[0,2], fig_label='d)',
+                              trend=trend, aspect=aspect)
+        self.correlation_plot(y, z, ylabel, zlabel,
+                              fig=fig, figloc=gs[1,2], fig_label='e)',
+                              trend=trend, aspect=aspect)
+        self.correlation_plot(x, y, xlabel, ylabel,
+                              fig=fig, figloc=gs[2,2], fig_label='f)',
+                              trend=trend, aspect=aspect)
 
         plt.tight_layout()
         if self.write: plt.savefig(f"{filename}.png", bbox_inches='tight')
@@ -77,7 +108,7 @@ class Plotter:
         ax.set_title(title, fontsize=20)
         ax.set_global()
         ax.coastlines(color='grey')
-        #self.plot_boundaries(ax)
+        self.plot_boundaries(ax)
 
         scr = ax.scatter(self.lons, self.lats, c=values, alpha=0.6,
                          edgecolors='w', linewidth=0.5, cmap=cmap,
@@ -102,7 +133,8 @@ class Plotter:
 
         if show: plt.show()
 
-    def correlation_plot(self, x, y, xlabel, ylabel, trend=False, aspect=None,
+    def correlation_plot(self, x, y, xlabel, ylabel,
+                         residual=False, trend=False, aspect=None,
                          fig=None, figloc=111, fig_label=None, filename=None):
 
         show = False
@@ -137,10 +169,10 @@ class Plotter:
 
         ax.set_box_aspect(1)
 
-        if fig_label=='d)':
+        if residual:
             ax.text(-0.45, 0.95, fig_label,
                     transform=ax.transAxes, fontsize='xx-large')
-        elif fig_label=='c)':
+        else:
             ax.text(-0.2, 1.05, fig_label,
                     transform=ax.transAxes, fontsize='xx-large')
 
