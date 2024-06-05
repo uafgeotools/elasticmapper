@@ -84,6 +84,23 @@ def sm2v(input_mat):
 
     return output_vec
 
+def print_matrix_matlab(matrix):
+    n_rows, n_columns = matrix.shape
+    for i in range(n_rows):
+
+        if i == 0:
+            print("[", end="")
+        else:
+            print(" ", end="")
+
+        for j in range(n_columns):
+            print(f"{matrix[i, j]:17.12f}", end=" ")
+
+        if i == n_rows - 1:
+            print("]", end="\n\n")
+        else:
+            print(";", end="\n")
+
 def read_table(filename):
     table = []
     with open(filename, 'r') as file:
