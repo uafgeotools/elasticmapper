@@ -23,19 +23,24 @@ def distance(c_vec, sigma, tracker=None, method="differential_evolution", popsiz
     # wraps around GetTempAndT0S0P0
     # function designed to call GetTempAndT0S0P0 within a user defined parallelizatin routine
 
-    if U:
-        return betaT(t_mat, DistToVSigmaofU(t_mat, U, sigma))
+    if U is None:
+        if np.linalg.norm(t_mat) == 0:
+            return [0, 0, 0, 0]
+        else:
+            # To keep track of how much of the parallelized job is completed
+            if tracker:
+                print(f'{tracker} \n')
 
+            temp = GetTempAndT0S0P0(t_mat, sigma, method=method, popsize=popsize,
+                                    number_of_runs=number_of_runs,
+                                    sample_size=sample_size,
+                                    number_of_minima=number_of_minima,
+                                    use_parallel_processing=use_parallel_processing)
+
+            return [betaT(t_mat, temp[0]), temp[1]['theta'], temp[1]['sigma'],
+                    temp[1]['phi']]
     else:
-        # To keep track of how much of the parallelized job is completed
-        if tracker:
-            print(f'{tracker} \n')
-
-        temp = GetTempAndT0S0P0(t_mat, sigma, method=method, popsize=popsize, number_of_runs=number_of_runs,
-                                sample_size=sample_size, number_of_minima=number_of_minima,
-                                use_parallel_processing=use_parallel_processing)
-
-        return [betaT(t_mat, temp[0]), temp[1]['theta'], temp[1]['sigma'], temp[1]['phi']]
+        return betaT(t_mat, DistToVSigmaofU(t_mat, U, sigma))
 
 def closest(Tmat, Sigma):
     # returns closest Tmat (6x6 matrix)
