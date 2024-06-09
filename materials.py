@@ -91,6 +91,7 @@ def get_materials_Tvec(material):
     4 - Test matrices from TapeTape2022
     5 - Closest elasticity tensors to a tensor with trivial symmetry far from the monoclinic class (Values taken from ES_FarFromMONO_n2000.pdf)
     6 - Test matrices from exam
+    7 - Mar17 matrix
     '''
 
     s1 = 1
@@ -388,6 +389,17 @@ def get_materials_Tvec(material):
                                           2])
 
         return T1vec, T2vec, T3vec
+
+    elif material == "Mar17":
+
+        Tvec = np.array([ 206.2,  -67.4,   17.1,  -15.9,  166.6,  -19.5,
+                                  352.9,   32.2,    3.3,   61.6,  -41.6,
+                                          343.8,    0.4,   73.6,   -4.2,
+                                                  270.0,   88.8,   13.3,
+                                                          287.1,   30.7,
+                                                                   74.0])
+
+        return Tvec
 
     else:
 
