@@ -1,7 +1,10 @@
-name: elasticmapper
+name: elasticmapper_scripts
 channels:
   - conda-forge
 dependencies:
+  - cartopy
+  - geopandas
   - matplotlib
+  - notebook
   - numpy
   - scipy
