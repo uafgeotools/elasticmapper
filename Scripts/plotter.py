@@ -2,7 +2,11 @@ import cartopy.crs as ccrs
 from cartopy.feature import ShapelyFeature
 import geopandas as gpd
 import matplotlib.gridspec as gridspec
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
+
+from themes import color_themes
+from themes import symmetry_classes_1
 
 class Plotter:
 
@@ -181,6 +185,37 @@ class Plotter:
                 plt.savefig(f'{filename}.png', bbox_inches='tight')
 
         if show: plt.show()
+
+    def global_sigma_plot(self, values, color_coastlines,
+                                  legend_title, filename=None):
+
+        colors = color_themes()
+
+        fig = plt.figure(figsize=(9, 5))
+        ax = fig.add_subplot(111,
+            projection=ccrs.Robinson(central_longitude=self.central_longitude))
+        ax.set_global()
+        ax.coastlines(color=color_coastlines)
+        self.plot_boundaries(ax)
+
+        legend_elements = []
+        for k, symmetry_class in enumerate(symmetry_classes_1):
+            color = colors[symmetry_class]
+            ax.scatter(self.lons[values == k], self.lats[values == k],
+                       color=color, alpha=0.6, edgecolors='w', linewidth=0.5,
+                       transform=ccrs.PlateCarree())
+            legend_elements.append(Line2D([0], [0], linestyle='-', marker='o',
+                                          color=color, label=symmetry_class))
+
+        ax.legend(handles=legend_elements, bbox_to_anchor=(1, 1),
+                  loc='upper left', fontsize=9, title=legend_title,
+                  title_fontsize=12)
+
+        if self.write:
+            if filename:
+                plt.savefig(f'{filename}.png', bbox_inches='tight')
+
+        plt.show()
 
     def plot_boundaries(self, ax):
 
