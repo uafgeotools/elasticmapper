@@ -97,7 +97,7 @@ def print_matrix_matlab(matrix):
             print(f"{matrix[i, j]:17.12f}", end=" ")
 
         if i == n_rows - 1:
-            print("]", end="\n\n")
+            print("]", end="\n")
         else:
             print(";", end="\n")
 
