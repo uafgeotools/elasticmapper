@@ -1,0 +1,32 @@
+This folder contains SPECFEM3D_cartesian model_aniso.f90 files with models belonging to
+different symmetry classes generated from the Brown2016 map. The Brown2016 map and its
+closest maps belonging to different symmetry groups are defined in the model files below.
+
+model_aniso_ISO.f90 --> closest isotropic map to the Brown2016 map
+model_aniso_XISO.f90 --> closest transversely isotropic map to the Brown2016 map 
+model_aniso_TET.f90 --> closest tetragonal map to the Brown2016 map
+model_aniso_ORTH.f90 --> closest orthorhombic map to the Brown2016 map
+model_aniso_MONO.f90 --> closest monoclinic map to the Brown2016 map
+model_aniso_TRIV.f90 --> Brown2016 map
+
+model_aniso_ISO_XISO.f90 --> map halfway between model_aniso_ISO and model_aniso_XISO
+model_aniso_XISO_TET.f90 --> map halfway between model_aniso_XISO and model_aniso_TET
+model_aniso_TET_ORTH.f90 --> map halfway between model_aniso_TET and model_aniso_ORTH
+model_aniso_ORTH_MONO.f90 --> map halfway between model_aniso_ORTH and model_aniso_MONO
+model_aniso_MONO_TRIV.f90 --> map halfway between model_aniso_MONO and model_aniso_TRIV
+
+To use one of these models in SPECFEM simulations -
+1. Copy the file of interest into the SPECFEM source code folder
+   src/generate_databases/ and rename the file as model_aniso.f90
+2. In the Par_file set the flag ANISOTROPY = .true.
+3. In the Mesh_Par_file while setting the material definition for the anisotropic
+   material set the anisotropy flag to 2
+
+These models were generated using the notebook -
+https://github.com/uafgeotools/elasticmapper/blob/master/Scripts/Seismograms/models_for_specfem.ipynb
+
+Note:
+
+- The generated model parameter values were multiplied by a factor of 10^9 before
+  being written into the model_aniso_*.f90 files to make them consistent with the
+  Brown et al. 2016 paper.

@@ -1,0 +1,38 @@
+This folder contains SPECFEM3D_cartesian model_aniso.f90 files with different 
+anisotropic models generated from the Brown2016 map. Linear interpolation (and 
+extrapolation) is used to generate maps between (and outside) the closest 
+isotropic map to the Brown2016 map and the Brown2016 map. 
+
+model_aniso_t00.f90 --> closest isotropic map to Brown2016 map
+model_aniso_t10.f90 --> map with 10% anisotropy of Brown2016 map
+model_aniso_t20.f90 --> map with 20% anisotropy of Brown2016 map
+model_aniso_t30.f90 --> map with 30% anisotropy of Brown2016 map
+model_aniso_t40.f90 --> map with 40% anisotropy of Brown2016 map
+model_aniso_t50.f90 --> map with 50% anisotropy of Brown2016 map
+model_aniso_t60.f90 --> map with 60% anisotropy of Brown2016 map
+model_aniso_t70.f90 --> map with 70% anisotropy of Brown2016 map
+model_aniso_t80.f90 --> map with 80% anisotropy of Brown2016 map
+model_aniso_t90.f90 --> map with 90% anisotropy of Brown2016 map
+model_aniso_t100.f90 --> Brown2016 map
+model_aniso_t110.f90 --> map with 110% anisotropy of Brown2016 map
+model_aniso_t120.f90 --> map with 120% anisotropy of Brown2016 map
+model_aniso_t130.f90 --> map with 130% anisotropy of Brown2016 map
+model_aniso_t140.f90 --> map with 140% anisotropy of Brown2016 map
+model_aniso_t150.f90 --> map with 150% anisotropy of Brown2016 map
+model_aniso_t160.f90 --> map with 160% anisotropy of Brown2016 map
+
+To use one of these models in SPECFEM simulations -
+1. Copy the file of interest into the SPECFEM source code folder
+   src/generate_databases/ and rename the file as model_aniso.f90
+2. In the Par_file set the flag ANISOTROPY = .true.
+3. In the Mesh_Par_file while setting the material definition for the anisotropic
+   material set the anisotropy flag to 2
+
+These models were generated using the notebook -
+https://github.com/uafgeotools/elasticmapper/blob/master/Scripts/Seismograms/models_for_specfem.ipynb
+
+Note:
+
+- The generated model parameter values were multiplied by a factor of 10^9 before
+  being written into the model_aniso_*.f90 files to make them consistent with the
+  Brown et al. 2016 paper.
