@@ -7,4 +7,9 @@ dependencies:
   - matplotlib
   - notebook
   - numpy
+  - obspy
+  - pip
+  - pygmt
   - scipy
+  - pip:
+    - git+https://github.com/adjtomo/pysep.git@devel
