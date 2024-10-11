@@ -84,22 +84,29 @@ def sm2v(input_mat):
 
     return output_vec
 
-def print_matrix_matlab(matrix):
+def print_matrix(matrix, style="python"):
+
+    index = {"python": 0, "matlab": 1, "mathematica": 2}
+    si = index[style]
+
+    e1 = [" [ ",  "  ", " { "]
+    l1 = ["[[ ",  "[ ", "{{ "]
+    l2 = [ ", ",   " ",  ", "]
+    e3 = [" ]]", " ] ", " }}"]
+    l3 = [" ],", " ; ", " },"]
+
     n_rows, n_columns = matrix.shape
+
     for i in range(n_rows):
-
-        if i == 0:
-            print("[", end="")
-        else:
-            print(" ", end="")
-
-        for j in range(n_columns):
-            print(f"{matrix[i, j]:17.12f}", end=" ")
-
-        if i == n_rows - 1:
-            print("]", end="\n")
-        else:
-            print(";", end="\n")
+        print(f"\n{l1[si]}", end="")
+        for j in range(n_columns-1):
+            print(f"{matrix[i,j]:17.12f}{l2[si]}", end="")
+        if i==0:
+            l1[si] = e1[si]
+        elif i==n_rows-1:
+            l3[si] = e3[si]
+        print(f"{matrix[i,n_columns-1]:17.12f}{l3[si]}", end="")
+    print("\n")
 
 def read_table(filename):
     table = []
