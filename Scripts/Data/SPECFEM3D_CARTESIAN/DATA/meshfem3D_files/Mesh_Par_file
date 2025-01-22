@@ -5,11 +5,11 @@
 #-----------------------------------------------------------
 
 # coordinates of mesh block in latitude/longitude and depth in km
-LATITUDE_MIN                    = -156000.0
-LATITUDE_MAX                    =  156000.0
-LONGITUDE_MIN                   = -156000.0
-LONGITUDE_MAX                   =  156000.0
-DEPTH_BLOCK_KM                  = 156.d0
+LATITUDE_MIN                    = -312000.0
+LATITUDE_MAX                    =  312000.0
+LONGITUDE_MIN                   = -312000.0
+LONGITUDE_MAX                   =  312000.0
+DEPTH_BLOCK_KM                  = 312.d0
 UTM_PROJECTION_ZONE             = 6
 SUPPRESS_UTM_PROJECTION         = .true.
 
@@ -22,11 +22,11 @@ CAVITY_FILE                     = no_cavity.dat
 # number of elements at the surface along edges of the mesh at the surface
 # (must be 8 * multiple of NPROC below if mesh is not regular and contains mesh doublings)
 # (must be multiple of NPROC below if mesh is regular)
-NEX_XI                          = 312
-NEX_ETA                         = 312
+NEX_XI                          = 624
+NEX_ETA                         = 624
 
 # number of MPI processors along xi and eta (can be different)
-NPROC_XI                        = 6
+NPROC_XI                        = 48
 NPROC_ETA                       = 39
 
 #-----------------------------------------------------------
@@ -38,10 +38,10 @@ NPROC_ETA                       = 39
 # Regular/irregular mesh
 USE_REGULAR_MESH                = .true.
 # Only for irregular meshes, number of doubling layers and their position
-NDOUBLINGS                      = 1
+NDOUBLINGS                      = 0
 # NZ_DOUBLING_1 is the parameter to set up if there is only one doubling layer
 # (more doubling entries can be added if needed to match NDOUBLINGS value)
-NZ_DOUBLING_1                   = 204
+NZ_DOUBLING_1                   = 0
 NZ_DOUBLING_2                   = 0
 
 #-----------------------------------------------------------
@@ -86,7 +86,7 @@ NMATERIALS                      = 1
 #     Q_mu             : Q_mu attenuation quality factor
 #     anisotropy_flag  : 0 = no anisotropy / 1,2,... check the implementation in file aniso_model.f90
 #     domain_id        : 1 = acoustic / 2 = elastic
-1   3378.0   8095.0   4482.0   57823    600.0 2 2
+1   2623.0   8095.0   4482.0   57823    600.0 2 2
 
 #-----------------------------------------------------------
 #
@@ -98,4 +98,4 @@ NMATERIALS                      = 1
 NREGIONS                        = 1
 # define the different regions of the model as :
 #NEX_XI_BEGIN  #NEX_XI_END  #NEX_ETA_BEGIN  #NEX_ETA_END  #NZ_BEGIN #NZ_END  #material_id
-         1         312              1             312          1      156         1
+         1         624              1             624          1      312         1
