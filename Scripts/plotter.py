@@ -4,6 +4,7 @@ import geopandas as gpd
 import matplotlib.gridspec as gridspec
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
+import numpy as np
 
 from themes import color_themes
 from themes import symmetry_classes_1
@@ -94,6 +95,10 @@ class Plotter:
 
         cmap = plt.get_cmap(cmap)
         if reverse_cmap: cmap = cmap.reversed()
+
+        masked_values = np.ma.masked_invalid(values)
+        cmap.set_bad('grey')
+
         extend = 'neither'
         if vmin == None:
             vmin = min(values)
@@ -111,10 +116,10 @@ class Plotter:
         projection=ccrs.Robinson(central_longitude=self.central_longitude))
         ax.set_title(title, fontsize=20)
         ax.set_global()
-        ax.coastlines(color='grey')
+        ax.coastlines(color='dimgrey')
         self.plot_boundaries(ax)
 
-        scr = ax.scatter(self.lons, self.lats, c=values, alpha=0.6,
+        scr = ax.scatter(self.lons, self.lats, c=masked_values, alpha=0.6,
                          edgecolors='w', linewidth=0.5, cmap=cmap,
                          vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree())
         clb = plt.colorbar(scr, extend=extend, orientation='vertical',
