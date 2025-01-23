@@ -318,7 +318,8 @@
   c56 = - d46
   c66 = d66
 
-! overwrite perturbation model 2 with map with 7_5% anisotropy of Brown2016 map
+! overwrite perturbation model 2 with map with t=0.925 on the direct path
+! between the Brown2016 map and the closest isotropic map to the Brown2016 map
   if (iflag_aniso == IANISOTROPY_MODEL2) then
     c11 =  114.580833333333 * 1d9
     c12 =   35.221666666667 * 1d9

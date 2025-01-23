@@ -318,7 +318,7 @@
   c56 = - d46
   c66 = d66
 
-! overwrite perturbation model 2 with map halfway between closest monoclinic and trivial map
+! overwrite perturbation model 2 with map halfway between closest trivial and monoclinic map
 ! to the Brown2016 map
   if (iflag_aniso == IANISOTROPY_MODEL2) then
     c11 =   68.6711 * 1d9

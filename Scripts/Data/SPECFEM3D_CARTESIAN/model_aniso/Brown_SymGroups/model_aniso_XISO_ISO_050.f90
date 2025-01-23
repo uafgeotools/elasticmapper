@@ -318,7 +318,7 @@
   c56 = - d46
   c66 = d66
 
-! overwrite perturbation model 2 with map halfway between closest isotropic and transversely isotropic map
+! overwrite perturbation model 2 with map halfway between closest transversely isotropic and isotropic map
 ! to the Brown2016 map
   if (iflag_aniso == IANISOTROPY_MODEL2) then
     c11 =  118.8108 * 1d9
