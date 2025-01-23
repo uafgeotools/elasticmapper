@@ -3,15 +3,18 @@ anisotropic models generated from the Brown2016 map. Linear interpolation is
 used to generate maps between the closest isotropic map to the Brown2016 map
 and the map with 20% anisotropy of the Brown2016 map. 
 
-model_aniso_t00.f90   --> closest isotropic map to Brown2016 map
-model_aniso_t2_5.f90  --> map with  2.5% anisotropy of Brown2016 map
-model_aniso_t5.f90    --> map with  5.0% anisotropy of Brown2016 map
-model_aniso_t7_5.f90  --> map with  7.5% anisotropy of Brown2016 map
-model_aniso_t10.f90   --> map with 10.0% anisotropy of Brown2016 map
-model_aniso_t12_5.f90 --> map with 12.5% anisotropy of Brown2016 map
-model_aniso_t15.f90   --> map with 15.0% anisotropy of Brown2016 map
-model_aniso_t17_5.f90 --> map with 17.5% anisotropy of Brown2016 map
-model_aniso_t20.f90   --> map with 20.0% anisotropy of Brown2016 map
+TRIV --> Brown2016 map
+ISO --> closest isotropic map to Brown2016 map
+
+model_aniso_TRIV_ISO_100.f90  --> closest isotropic map to Brown2016 map
+model_aniso_TRIV_ISO_097p5.f90 --> map with t=0.975 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_095.f90   --> map with t=0.95 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_092p5.f90 --> map with t=0.925 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_090.f90   --> map with t=0.90 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_087p5.f90 --> map with t=0.875 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_085.f90   --> map with t=0.85 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_082p5.f90 --> map with t=0.825 on the direct path between TRIV and ISO
+model_aniso_TRIV_ISO_080.f90   --> map with t=0.80 on the direct path between TRIV and ISO
 
 To use one of these models in SPECFEM simulations -
 1. Copy the file of interest into the SPECFEM source code folder
