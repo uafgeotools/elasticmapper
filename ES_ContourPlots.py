@@ -1,15 +1,21 @@
+import concurrent.futures
+import os
+
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
+import pyvista as pv
+from functools import partial
+from matplotlib.colors import ListedColormap
 
+from Scripts.themes import symmetry_classes
 from find_symmetry_groups import norm_matrix
 from find_symmetry_groups import proj_to_vsig_of_u_new
-from find_symmetry_groups import xyzTP
 from find_symmetry_groups import ZRot
 from find_symmetry_groups import YRot
+from safe_module import closest
 
-def Alpha(t_mat, theta, phi, MONOorXISO):
-
+def Alpha(t_mat, MONOorXISO, theta, phi):
     U = np.dot(ZRot(theta), YRot(phi))
     proj_matrix = proj_to_vsig_of_u_new(t_mat, U, MONOorXISO)
     return np.arccos(norm_matrix(proj_matrix) / norm_matrix(t_mat)) / np.pi * 180
@@ -23,7 +29,9 @@ def ES_ContourPlots(t_mat, sigma, vmin=None, vmax=None):
     phi_values = np.linspace(0, np.pi, 100)
     Theta, Phi = np.meshgrid(theta_values, phi_values)
 
-    Z = np.array([[Alpha(t_mat, theta, phi, sigma) for theta in theta_values] for phi in phi_values])
+    Z = np.array([[Alpha(t_mat, sigma, theta, phi) for theta in
+                   theta_values] for phi
+                  in phi_values])
 
     if vmin is not None and vmax is not None:
         fig, ax = plt.subplots(figsize=(20, 10))
@@ -57,31 +65,69 @@ def ES_ContourPlots(t_mat, sigma, vmin=None, vmax=None):
         plt.xlabel('Theta')
         plt.ylabel('Phi')
         plt.title('Contour Plot')
-        #plt.show()
+        plt.show()
 
         return plt
 
-# SHOULD THE cpMONO FUNCTIONS BE RENAMED?
-def cpMONOprelim(t_mat):
-    theta, phi = np.mgrid[0:2 * np.pi:100j, 0:np.pi:50j]
-    alpha = np.vectorize(lambda t, p: Alpha(t_mat, t, p, 'MONO'))(theta, phi)  # Adjust as necessary
+def alpha_mono_spheres(t_mats, lattice=False, pov=None, up_direction=None):
 
-    x, y, z = xyzTP([theta, phi])
-    return x, y, z, alpha
+    workers = os.cpu_count()
 
+    n_intervals = 10
+    cmap = ListedColormap(plt.get_cmap("RdYlBu", n_intervals)
+                          (np.linspace(0, 1, n_intervals)))
+    cmap = cmap.reversed()
 
-# Function to create the 3D plot with Poly3DCollection
-def cpMONO(t_mat):
-    x, y, z, alpha = cpMONOprelim(t_mat)
+    # Generate spherical coordinates
+    theta_values = np.linspace(0, 2 * np.pi, 500)
+    phi_values = np.linspace(0, np.pi, 500)
+    theta, phi = np.meshgrid(theta_values, phi_values)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    # Convert spherical coordinates to Cartesian coordinates
+    x = np.sin(phi) * np.cos(theta)
+    y = np.sin(phi) * np.sin(theta)
+    z = np.cos(phi)
 
-    # Choose a colormap suitable to your preference and the nature of the data
-    color_map = plt.get_cmap('jet')
-    ax.plot_surface(x, y, z, facecolors=color_map(alpha/ np.max(alpha)), rstride=1, cstride=1,
-                    antialiased=True)
+    x = x.flatten()
+    y = y.flatten()
+    z = z.flatten()
 
-    ax.view_init(elev=30, azim=75)  # You can adjust the elevation and azimuth for the desired viewpoint
-    ax.set_axis_off()  # Turn off the axis
-    plt.show()
+    # Create a PyVista mesh
+    points = np.column_stack((x, y, z))
+
+    if not isinstance(t_mats, list):
+        t_mats = [t_mats]
+
+    if lattice:
+        t_mat = t_mats[0]
+        t_mats = [closest(t_mat, symmetry_class) for symmetry_class in
+                  symmetry_classes]
+        t_mats.append(t_mat)
+
+    n_t_mat = len(t_mats)
+    if n_t_mat == 1:
+        plotter = pv.Plotter(shape=(1, 1))
+    else:
+        plotter = pv.Plotter(shape=((n_t_mat + 1) // 2, 2))
+
+    for i, t_mat in enumerate(t_mats):
+        print("t_mat index = ", i+1)
+        print("running ....")
+
+        Alpha_new = partial(Alpha, t_mat, "MONO")
+        with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
+            data = np.array(list(executor.map(Alpha_new, theta.flatten(), phi.flatten())))
+
+        mesh = pv.PolyData(points)
+        mesh['data'] = data
+
+        plotter.subplot(i // 2, i % 2)
+        plotter.add_mesh(mesh, scalars='data', cmap=cmap, opacity=1.0,
+                         show_scalar_bar=False)
+        plotter.add_axes()
+        plotter.add_scalar_bar(title=f"alpha_mono", vertical=True,
+                               n_labels=n_intervals)
+        if pov is not None and up_direction is not None:
+            plotter.view_vector(pov, viewup=up_direction)
+
+    plotter.show()
