@@ -24,12 +24,12 @@ def distance(c_vec, sigma, tracker=None, method="differential_evolution", popsiz
     # function designed to call GetTempAndT0S0P0 within a user defined parallelizatin routine
 
     if U is None:
+        # To keep track of how much of the parallelized job is completed
+        if tracker:
+            print(f'{tracker} \n')
         if np.linalg.norm(t_mat) == 0:
             return [0, 0, 0, 0]
         else:
-            # To keep track of how much of the parallelized job is completed
-            if tracker:
-                print(f'{tracker} \n')
 
             temp = GetTempAndT0S0P0(t_mat, sigma, method=method, popsize=popsize,
                                     number_of_runs=number_of_runs,
