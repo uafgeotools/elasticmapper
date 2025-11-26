@@ -74,5 +74,5 @@ fig.plot(x=station_longitudes, y=station_latitudes, style='t0.125c')
 fig.plot(x=station_x_coordinate, y=station_y_coordinate, style='t0.35c', fill='red')
 fig.meca(focal_mechanism, convention='mt', scale='1.75c', compressionfill='red')
 
-if write: fig.savefig('source_station_map.png')
+if write: fig.savefig('source_station_map.pdf')
 fig.show()
