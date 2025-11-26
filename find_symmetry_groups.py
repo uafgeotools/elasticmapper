@@ -134,7 +134,7 @@ def proj_to_vsig_of_u(Tmat, id, mode):
             [0, 0, 0, 0, avg_de, 0],
             [0, 0, 0, 0, 0, f]
         ])
-    elif mode == "XISO":
+    elif mode in ["XISO", "XISO_VTI", "XISO_HTI"]:
         return np.array([
             [(a+b)/2, 0, 0, 0, 0, 0],
             [0, (a+b)/2, 0, 0, 0, 0],

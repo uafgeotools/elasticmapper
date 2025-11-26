@@ -42,9 +42,17 @@ def distance(c_vec, sigma, tracker=None, method="differential_evolution", popsiz
     else:
         return betaT(t_mat, DistToVSigmaofU(t_mat, U, sigma))
 
-def closest(Tmat, Sigma):
+def closest(Tmat, Sigma, tracker=None):
     # returns closest Tmat (6x6 matrix)
-    temp = GetTempAndT0S0P0(Tmat, Sigma)
+    if tracker:
+        print(f'{tracker} \n')
+
+    if np.linalg.norm(Tmat) == 0:
+        return np.zeros((6,6))
+    elif np.any(np.isnan(Tmat)):
+        return np.full((6,6), np.nan)
+    else:
+        temp = GetTempAndT0S0P0(Tmat, Sigma, use_parallel_processing=False)
     return proj_to_vsig_of_u_new(Tmat, UsHat([temp[1]['theta'], temp[1]['sigma'], temp[1]['phi']]), Sigma)
 
 def GetTempAndT0S0P0(Tmat, Sigma, method="differential_evolution", popsize=15, number_of_runs=10, sample_size=250,
@@ -62,11 +70,20 @@ def GetTempAndT0S0P0(Tmat, Sigma, method="differential_evolution", popsize=15, n
         id   = np.eye(3)
         temp = (DistToVSigmaofU(Tmat, id, "ISO"), {'theta': 0, 'sigma': 0, 'phi': 0})
 
+    elif Sigma == "XISO_VTI":
+
+        id   = np.eye(3)
+        temp = (DistToVSigmaofU(Tmat, id, "XISO_VTI"), {'theta': 0, 'sigma': 0, 'phi': 0})
+
     else:
 
         theta_bounds = (0, 2 * np.pi)
         sigma_bounds = (-np.pi, np.pi)
         phi_bounds   = (0, np.pi)
+
+        if Sigma == "XISO_HTI":
+            phi_bounds = (np.pi/2, np.pi/2)
+
         bounds       = [theta_bounds, sigma_bounds, phi_bounds]
 
         if method=="differential_evolution":
