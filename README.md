@@ -1,5 +1,5 @@
 # elasticmapper
-Tool to analyze and visualize elastic maps.
+Python tool to analyze and visualize elastic maps.
 
 ## Installation
 
