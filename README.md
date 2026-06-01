@@ -1,5 +1,18 @@
 # elasticmapper
-Python tool to analyze and visualize elastic maps.
+This open-source python package provides cutting-edge tools for analyzing and 
+visualizing elastic symmetry. At its core, it finds an elastic map conforming 
+to a selected symmetry class, closest to an input elastic map of arbitrary 
+symmetry. Wrapper methods centered around this core functionality facilitate 
+the determination of symmetry of given elastic maps. The applicability of the 
+algorithm used is not limited to high symmetry input elastic maps. This is 
+enabled by the data driven nature of the algorithm, which in its default 
+state, does not make assumptions on the material’s symmetry axes. Auxiliary 
+tools such as those for elastic map manipulation (basis transformation, 
+rotation), and Christoffel matrix based seismic velocity computation are also 
+included. The package automatically utilizes simple parallel‑computing 
+frameworks when available, for computationally intensive processes. This is 
+extremely useful when dealing with large datasets, for instance a global 
+dataset of elastic maps from a geodynamic analysis.
 
 ## Installation
 
