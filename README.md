@@ -1,4 +1,10 @@
 # elasticmapper
+
+UPGRADED AND DOCUMENTED VERSION COMING SOON !!!\
+Fill this google [form](https://forms.gle/D4HVBNYoF2QjzotG9) to be notified 
+of the new version release, or to get in touch with the developers with 
+any questions or suggestions.
+
 This open-source python package provides cutting-edge tools for analyzing and 
 visualizing elastic symmetry. At its core, it finds an elastic map conforming 
 to a selected symmetry class, closest to an input elastic map of arbitrary 
